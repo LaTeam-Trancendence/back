@@ -1,2 +1,1 @@
 djangorestframework==3.12.4
-dj-rest-auth
