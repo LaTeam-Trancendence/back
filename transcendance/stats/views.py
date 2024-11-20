@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from pong import models
 
 # Create your views here.
 from rest_framework.views import APIView
