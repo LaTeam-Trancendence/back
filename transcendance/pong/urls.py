@@ -18,7 +18,7 @@ from django.urls import path, include
 from rest_framework import routers
 
 from profils.views import StatViewset
-from register.views import RegisterUserViewset
+from Register.views import RegisterUserViewset
 
 router = routers.SimpleRouter()
 router.register('stat', StatViewset, basename='stat')
