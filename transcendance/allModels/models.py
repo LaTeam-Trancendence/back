@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
+# from django.contrib.auth.models import User
 #from stats import settings
 
 # //____________Player______________//
@@ -10,13 +11,15 @@ from django.contrib.auth.models import User
 #       short_name = models.CharField(unique=True, max_length=15)
 # Reste a gerer les amis en intergrant une liste
 
-class Player(User):
+class Player(models.Model):
 
     profile_picture = models.TextField(null=True)
     language = models.CharField(max_length=2, default="FR")
     
     #friends
     status = models.BooleanField(default=False)
+    
+    #total_matches = models.IntegerField(default=0)
     
     win_pong = models.IntegerField(default=0)
     lose_pong = models.IntegerField(default=0)
@@ -35,21 +38,23 @@ class Player(User):
 #         cascade = match supprimes
 # related_name='user_matches' = accede a tous les matchs d un joueur
 
-class Match(models.Model):
+# class Match(models.Model):
     
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, 
-                        related_name='user_matches')
-    adv = models.ForeignKey('auth.User', on_delete=models.SET_NULL, 
-                        null=True, related_name='adv_matches')
+#     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, 
+#                         related_name='user_matches')
+#     adv = models.ForeignKey('auth.User', on_delete=models.SET_NULL, 
+#                         null=True, related_name='adv_matches')
     
-    player_score = models.IntegerField(default=0)
-    adv_score = models.IntegerField(default=0)
-    result = models.IntegerField(default=0)
+#     user_score = models.IntegerField(default=0)
+#     adv_score = models.IntegerField(default=0)
+#     result = models.IntegerField(default=0)
     
-    date = models.DateTimeField(null=True)
-    start_match = models.DateTimeField(null=True)
-    end_match = models.DateTimeField(null=True)
+#     date = models.DateTimeField(null=True)
+#     start_match = models.DateTimeField(null=True)
+#     end_match = models.DateTimeField(null=True)
     
+#     def _str_(self):
+#         return f"Match {self.id} - {self.user} vs {self.adv}"
     
 # //___________friends________________//
 

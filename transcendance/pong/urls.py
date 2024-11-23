@@ -18,11 +18,11 @@ from django.urls import path, include
 from rest_framework import routers
 
 from profils.views import StatViewset
-from Register.views import RegisterUserViewset
+# from Register.views import RegisterUserViewset
 
 router = routers.SimpleRouter()
 router.register('stat', StatViewset, basename='stat')
-router.register('Register', RegisterUserViewset, basename= 'register')
+# router.register('Register', RegisterUserViewset, basename= 'register')
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
