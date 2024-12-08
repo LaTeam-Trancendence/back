@@ -1,12 +1,12 @@
 import store from "@/store";
-
+import uptadeAI from "./bane.js";
 
 function setupCanvas(canvas) {
-    const dpr = window.devicePixelRatio || 1; // Récupère le ratio de pixel
+    const dpr = window.devicePixelRatio || 1;
     canvas.width = canvas.clientWidth * dpr;
     canvas.height = canvas.clientHeight * dpr;
     const context = canvas.getContext("2d");
-    context.scale(dpr, dpr); // Échelle du contexte
+    context.scale(dpr, dpr);
     return context;
 }
 
@@ -130,57 +130,45 @@ export default function startPongGame(canvas, onPaddleMove) {
     }
 
     // Mouvement des raquettes
-    function IncreaseBallSpeed() {
-        if (ball_more_speed_x < 10 && ball_more_speed_x > -10) {
-            if (ball_more_speed_x < 0) {
+    function IncreaseBallSpeed() 
+    {
+        if (ball_more_speed_x < 10 && ball_more_speed_x > -10) 
+        {
+            if (ball_more_speed_x < 0) 
+            {
                 ball_more_speed_x = ball_more_speed_x - 0.00001;
             }
             else {
                 ball_more_speed_x = ball_more_speed_x + 0.00001;
             }
         }
-        if (ball_more_speed_y < 10  && ball_more_speed_y > -10) {
-            if (ball_more_speed_y < 0) {
+        if (ball_more_speed_y < 10  && ball_more_speed_y > -10) 
+        {
+            if (ball_more_speed_y < 0)
+            {
                 ball_more_speed_y = ball_more_speed_y - 0.00001;
             }
-            else {
+            else
+            {
                 ball_more_speed_y = ball_more_speed_y + 0.00001;
             }
         }
     }
 
-    function getVariable(){
-        const gameState = {
-            canvasWidth : canvas.width,
-            canvasHeight : canvas.height,
-            paddleWidth : 20,
-            paddleHeight : 120,
-            paddleOffset : 86,
-            ballSize : 10,
-            rightPaddleY : (canvas.height - paddleHeight) / 2,
-            PaddleSpeed : 6,
 
-            ballX : ballX,
-            ballY : ballY,
-            ballSpeedX : ballSpeedX,
-            ballSpeedY : ballSpeedY,
-            ball_more_speed_x : ball_more_speed_x,
-            ball_more_speed_y : ball_more_speed_y
-        };
-        uptadeAI(gameState);
-    }
-  
-    // Fonction de jeu
-    function gameLoop() {
+    let aiController = new uptadeAI(); //attention au chemin d'importation
+    function gameLoop() 
+    {
         Draw();
         MoveBall();
         MovePaddles();
-        if (!gameLoop.intervalSet) {
-            setInterval(getVariable, 1000);
-            gameLoop.intervalSet = true;
-        }
-        if (store.getters["GetBallSpeedTimeState"] == true) {
+        if (store.getters["GetBallSpeedTimeState"] == true) 
+        {
             IncreaseBallSpeed();
+        }
+        if (isAIEnabled && aiController) 
+        {
+            rightPaddleSpeed = aiController.updateAi(gameState);
         }
     
         requestAnimationFrame(gameLoop);
@@ -188,7 +176,8 @@ export default function startPongGame(canvas, onPaddleMove) {
     }
   
     // Contrôle des raquettes
-    function controlPaddles() {
+    function controlPaddles() 
+    {
         window.addEventListener("keydown", (event) => {
             const layoutState = store.getters["GetLayoutState"];
 
@@ -215,9 +204,59 @@ export default function startPongGame(canvas, onPaddleMove) {
             }
         });
     }
+
+    function controlPaddlesLeftIA() 
+    {
+         // Ia rightPaddleSpeed = -PaddleSpeed;
+        window.addEventListener("keydown", (event) => {
+            const layoutState = store.getters["GetLayoutState"];
+            if (layoutState) {
+                if (event.key === "w") leftPaddleSpeed = -PaddleSpeed;
+            }
+            else {
+                if (event.key === "z") leftPaddleSpeed = -PaddleSpeed;
+            }
+            if (event.key === "s") leftPaddleSpeed = PaddleSpeed;
+        });
+    
+        window.addEventListener("keyup", (event) => {
+            const layoutState = store.getters["GetLayoutState"];
+            if (layoutState) {
+                if (event.key === "w" || event.key === "s") leftPaddleSpeed = 0;
+            }
+            else {
+                if (event.key === "z" || event.key === "s") leftPaddleSpeed = 0;
+            }
+        });
+    }
+
   
     // Démarrer le jeu
+    if (isAIEnabled && aiController) {
+        const gameState = {          
+            canvasWidth : canvas.width,
+            canvasHeight : canvas.height,
+            paddleWidth : 20,
+            paddleHeight : 120,
+            paddleOffset : 86,
+            ballSize : 10,
+            rightPaddleY : (canvas.height - paddleHeight) / 2,
+            PaddleSpeed : 6,
+
+            ballX : ballX,
+            ballY : ballY,
+            ballSpeedX : ballSpeedX,
+            ballSpeedY : ballSpeedY,
+            ball_more_speed_x : ball_more_speed_x,
+            ball_more_speed_y : ball_more_speed_y
+        };
+        aiController.updateAi(gameState);
+        controlPaddlesLeftIA();
+    }
+    else 
+    {
+        controlPaddles();
+    }
     gameLoop();
-    controlPaddles();
 }
   
