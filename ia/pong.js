@@ -1,5 +1,5 @@
 import store from "@/store";
-import uptadeAI from "./bane.js";
+import aiController from "./ia.js";
 
 function setupCanvas(canvas) {
     const dpr = window.devicePixelRatio || 1;
@@ -11,6 +11,7 @@ function setupCanvas(canvas) {
 }
 
 export default function startPongGame(canvas, onPaddleMove) {
+    console.log("Jeu initialisé !");
     // const context = canvas.getContext("2d");
     const context = setupCanvas(canvas);
   
@@ -18,88 +19,85 @@ export default function startPongGame(canvas, onPaddleMove) {
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
   
-    // Variables du jeu
+    let isPortrait = window.innerHeight > window.innerWidth; // Orientation initiale
     const paddleWidth = 20;
     const paddleHeight = 120;
     const paddleOffset = 86;
     const ballSize = 10;
-  
-    let leftPaddleY = (canvas.height - paddleHeight) / 2; //h = (800 - 120) / 2 = 680 / 2 = 340
-    let rightPaddleY = (canvas.height - paddleHeight) / 2;
+
+    let leftPaddlePos = (isPortrait ? canvas.width : canvas.height - paddleHeight) / 2;
+    let rightPaddlePos = (isPortrait ? canvas.width : canvas.height - paddleHeight) / 2;
+
     let PaddleSpeed = 6;
-    let ballX = canvas.width / 2; //h=1400 = 1400 / 2 = 700 x
-    let ballY = canvas.height / 2; //h=800 = 800 /2 = 400 y
+    let ballX = canvas.width / 2;
+    let ballY = canvas.height / 2;
     let ballSpeedX = 8 * store.getters["GetBallSpeedManualState"];
     let ballSpeedY = 4 * store.getters["GetBallSpeedManualState"];
     let ball_more_speed_x = 0;
     let ball_more_speed_y = 0;
-  
-    // Mouvement des raquettes
+
     let leftPaddleSpeed = 0;
     let rightPaddleSpeed = 0;
   
-    // Dessiner la balle et les raquettes
     function Draw() {
         context.clearRect(0, 0, canvas.width, canvas.height);
-    
+
         // Balle
         context.beginPath();
         context.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
         context.fillStyle = store.getters["GetColor2State"];
         context.fill();
-    
-        // Raquette gauche
+
+        // Raquettes
         context.fillStyle = "rgba(255, 255, 255, 0)";
-        context.fillRect(paddleOffset, leftPaddleY, paddleWidth, paddleHeight);
-    
-        // Raquette droite
-        context.fillStyle = "rgba(255, 255, 255, 0)";
-        context.fillRect((canvas.width - paddleWidth) - paddleOffset, rightPaddleY, paddleWidth, paddleHeight);
+        if (isPortrait) {
+            context.fillRect(leftPaddlePos, paddleOffset, paddleHeight, paddleWidth);
+            context.fillRect(rightPaddlePos, canvas.height - paddleOffset - paddleWidth, paddleHeight, paddleWidth);
+        } else {
+            context.fillRect(paddleOffset, leftPaddlePos, paddleWidth, paddleHeight);
+            context.fillRect(canvas.width - paddleOffset - paddleWidth, rightPaddlePos, paddleWidth, paddleHeight);
+        }
     }
   
-    // Logique de collision de la balle
     function MoveBall() {
-        ballSpeedX += ball_more_speed_x; //ballSpeed ?
+        ballSpeedX += ball_more_speed_x;
         ballSpeedY += ball_more_speed_y;
         ballX += ballSpeedX;
         ballY += ballSpeedY;
-    
-        // Collision avec le haut et le bas du canvas
-        if (ballY <= 0 || ballY >= canvas.height) {
-            ballSpeedY = -ballSpeedY;
-            ball_more_speed_y = -ball_more_speed_y;
+
+        if (isPortrait) {
+            // Collision avec les côtés
+            if (ballX <= 0 || ballX >= canvas.width) {
+                ballSpeedX = -ballSpeedX;
+                ball_more_speed_x = -ball_more_speed_x;
+            }
+
+            // Collision avec les raquettes
+            if (
+                (ballY - ballSize <= paddleOffset + paddleWidth && ballX >= leftPaddlePos && ballX <= leftPaddlePos + paddleHeight) ||
+                (ballY + ballSize >= canvas.height - paddleOffset - paddleWidth && ballX >= rightPaddlePos && ballX <= rightPaddlePos + paddleHeight)
+            ) {
+                ballSpeedY = -ballSpeedY;
+                ball_more_speed_y = -ball_more_speed_y;
+            }
+        } else {
+            // Collision avec le haut et le bas
+            if (ballY <= 0 || ballY >= canvas.height) {
+                ballSpeedY = -ballSpeedY;
+                ball_more_speed_y = -ball_more_speed_y;
+            }
+
+            // Collision avec les raquettes
+            if (
+                (ballX - ballSize <= paddleOffset + paddleWidth && ballY >= leftPaddlePos && ballY <= leftPaddlePos + paddleHeight) ||
+                (ballX + ballSize >= canvas.width - paddleOffset - paddleWidth && ballY >= rightPaddlePos && ballY <= rightPaddlePos + paddleHeight)
+            ) {
+                ballSpeedX = -ballSpeedX;
+                ball_more_speed_x = -ball_more_speed_x;
+            }
         }
-    
-        // // Collision avec la raquette gauche
-        if (
-            ballX - ballSize <= paddleOffset + paddleWidth && 
-            ballY >= leftPaddleY && 
-            ballY <= leftPaddleY + paddleHeight
-        ) {
-            ballSpeedX = -ballSpeedX;
-            ball_more_speed_x = -ball_more_speed_x;
-            ballX = paddleOffset + paddleWidth + ballSize;
-        
-            // Modifier ballSpeedY en fonction de l'impact
-            const impact = (ballY - (leftPaddleY + paddleHeight / 2)) / (paddleHeight / 2);
-            ballSpeedY = impact * 5; // Ajustez ce multiplicateur pour contrôler l'effet
-        }
-        
-        if (
-            ballX + ballSize >= canvas.width - paddleOffset - paddleWidth && 
-            ballY >= rightPaddleY && 
-            ballY <= rightPaddleY + paddleHeight
-        ) {
-            ballSpeedX = -ballSpeedX;
-            ball_more_speed_x = -ball_more_speed_x;
-            ballX = canvas.width - paddleOffset - paddleWidth - ballSize;
-        
-            // Modifier ballSpeedY en fonction de l'impact
-            const impact = (ballY - (rightPaddleY + paddleHeight / 2)) / (paddleHeight / 2);
-            ballSpeedY = impact * 5; // Ajustez ce multiplicateur pour contrôler l'effet
-        }
-    
-        // Si la balle sort du canvas (score ou reset)
+
+        // Réinitialisation en cas de sortie
         if (ballX <= 0 || ballX >= canvas.width) {
             ballX = canvas.width / 2;
             ballY = canvas.height / 2;
@@ -108,55 +106,52 @@ export default function startPongGame(canvas, onPaddleMove) {
             if (Math.random() >= 0.5) {
                 ballSpeedX = -ballSpeedX;
             }
-            ball_more_speed_x = -ball_more_speed_x;
             ball_more_speed_x = 0;
             ball_more_speed_y = 0;
         }
     }
   
-    // Mouvement des raquettes
     function MovePaddles() {
-        leftPaddleY += leftPaddleSpeed;
-        rightPaddleY += rightPaddleSpeed;
-    
-        // Empêcher les raquettes de sortir du canvas
-        leftPaddleY = Math.max(0, Math.min(leftPaddleY, canvas.height - paddleHeight));
-        rightPaddleY = Math.max(0, Math.min(rightPaddleY, canvas.height - paddleHeight));
-    
-        // Appeler la fonction de callback avec les positions mises à jour
+        if (isPortrait) {
+            leftPaddlePos += leftPaddleSpeed;
+            rightPaddlePos += rightPaddleSpeed;
+
+            leftPaddlePos = Math.max(0, Math.min(leftPaddlePos, canvas.width - paddleHeight));
+            rightPaddlePos = Math.max(0, Math.min(rightPaddlePos, canvas.width - paddleHeight));
+        } else {
+            leftPaddlePos += leftPaddleSpeed;
+            rightPaddlePos += rightPaddleSpeed;
+
+            leftPaddlePos = Math.max(0, Math.min(leftPaddlePos, canvas.height - paddleHeight));
+            rightPaddlePos = Math.max(0, Math.min(rightPaddlePos, canvas.height - paddleHeight));
+        }
+
         if (typeof onPaddleMove === 'function') {
-            onPaddleMove({leftPaddleY, rightPaddleY});
+            onPaddleMove({ leftPaddleY: leftPaddlePos, rightPaddleY: rightPaddlePos });
         }
     }
 
-    // Mouvement des raquettes
-    function IncreaseBallSpeed() 
-    {
-        if (ball_more_speed_x < 10 && ball_more_speed_x > -10) 
-        {
-            if (ball_more_speed_x < 0) 
-            {
-                ball_more_speed_x = ball_more_speed_x - 0.00001;
-            }
-            else {
-                ball_more_speed_x = ball_more_speed_x + 0.00001;
-            }
+    function IncreaseBallSpeed() {
+        if (ball_more_speed_x < 10 && ball_more_speed_x > -10) {
+            ball_more_speed_x += ball_more_speed_x < 0 ? -0.00001 : 0.00001;
         }
-        if (ball_more_speed_y < 10  && ball_more_speed_y > -10) 
-        {
-            if (ball_more_speed_y < 0)
-            {
-                ball_more_speed_y = ball_more_speed_y - 0.00001;
-            }
-            else
-            {
-                ball_more_speed_y = ball_more_speed_y + 0.00001;
-            }
+        if (ball_more_speed_y < 10 && ball_more_speed_y > -10) {
+            ball_more_speed_y += ball_more_speed_y < 0 ? -0.00001 : 0.00001;
         }
     }
 
+    function ResizeWindow() {
+        isPortrait = window.innerHeight > window.innerWidth;
+        setupCanvas(canvas);
 
-    let aiController = new uptadeAI(); //attention au chemin d'importation
+        leftPaddlePos = (isPortrait ? canvas.width : canvas.height - paddleHeight) / 2;
+        rightPaddlePos = (isPortrait ? canvas.width : canvas.height - paddleHeight) / 2;
+        ballX = canvas.width / 2;
+        ballY = canvas.height / 2;
+    }   
+
+    let isAIEnabled = true; // Active l'IA
+    let aiController = new uptadeAi(); //attention au chemin d'importation
     function gameLoop() 
     {
         Draw();
@@ -175,9 +170,7 @@ export default function startPongGame(canvas, onPaddleMove) {
 //        clearInterval(myInterval);
     }
   
-    // Contrôle des raquettes
-    function controlPaddles() 
-    {
+    function controlPaddles() {
         window.addEventListener("keydown", (event) => {
             const layoutState = store.getters["GetLayoutState"];
 
@@ -191,7 +184,7 @@ export default function startPongGame(canvas, onPaddleMove) {
             }
             if (event.key === "s") leftPaddleSpeed = PaddleSpeed;
         });
-    
+
         window.addEventListener("keyup", (event) => {
             const layoutState = store.getters["GetLayoutState"];
 
@@ -230,7 +223,6 @@ export default function startPongGame(canvas, onPaddleMove) {
         });
     }
 
-  
     // Démarrer le jeu
     if (isAIEnabled && aiController) {
         const gameState = {          

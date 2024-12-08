@@ -1,6 +1,3 @@
-import startPongGame from "./bane.js";
-import store from "@/store";
-
 
 const paddleWidth = 20;
 const paddleHeight = 120;
@@ -11,7 +8,7 @@ let PaddleSpeed = 6;
 let i = 0;
 let j = 0;
 
-export default function AiController(){
+export default function aiController(){
     return {
         updateAi(gameState) {
             const canvasWidth = gameState.canvasWidth - paddleOffset;
