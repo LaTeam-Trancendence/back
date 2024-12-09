@@ -6,7 +6,6 @@ const ballSize = 10;
 let PaddleSpeed = 6;
 
 let i = 0;
-let j = 0;
 
 export default function aiController(){
     return {
@@ -19,82 +18,109 @@ export default function aiController(){
             let ball_more_speed_x = gameState.ball_more_speed_x;
             let ball_more_speed_y = gameState.ball_more_speed_y;
             //t = tableau
-            let t = previous(gameState.BallX, gameState.BallY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight);
+            let t = [0, 0, "gauche", "monte"]
+            t = previous(gameState.ballX, gameState.ballY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight, t);
+            console.log(t);
             let h = canvasHeight / 3; //haut
             let c = canvasHeight / 3 * 2; //centre
             let t1 = canvasWidth / 3; // gauche
             let t2 = canvasWidth / 3 * 2; // centre
-            let bx = gameState.BallX;
-            let by = gameState.BallY;
+            let bx = gameState.ballX;
+            let by = gameState.ballY;
             let targetY = canvasHeight / 2 + paddleHeight / 2;
             if (t[2] == "gauche")
             {
                 if (((by < h && bx >= t2) || (by >= h && by < c && bx < t1) || (by < h && bx < t1)) && t[3] == "descend") // hib 1/3 et cib 3/3 et hib 3/3
                 {
-                    targetY = h; // haut
+                    targetY = h * 1.2; // haut
+                    console.log("haut");
                 }
                 else if ((by >= h && by < c && bx >= t2 && t[3] == "monte") || (by > c && bx >= t2 && t[3] == "descend") || (by > c && bx < t1 && t[3] == "descend")) //cih 1/3 et bib 3/3 1/3
                 {
-                    targetY = h; // haut
+                    targetY = h * 1.2; // haut
+                    console.log("haut");
                 }
                 else if (((by > c && bx < t1) || (by > c && bx >= t2) || (by < h && bx < t1) || (by < h && bx >= t2)) && t[3] == "monte") // bih 1/3 bih 3/3 hih 1/3 hih 3/3
                 {
                     targetY = c; // bas
+                    console.log("bas");
                 }
                 else if (((by < h && bx >= t1 && bx < t2) || (by >= h && by < c && bx >= t1 && bx < t2) || (by > c && bx >= t1 && bx < t2)) && t[3] == "descend") // hib 2/3 cib 2/3 bib 2/3
                 {
-                    targetY = canvasHeight / 2.5; //c haut
+                    targetY = canvasHeight / 5 * 2; //c haut
+                    console.log("centre haut");
                 }
                 else if (((by >= c && bx >= t1 && bx < t2) || (by < h && bx >= t1 && bx < t2) || (by >= h && by < c && bx >= t1 && bx < t2)) && t[3] == "monte") // bih 2/3 hih 2/3 cb 2/3
                 {
-                    targetY = canvasHeight / 3 * 1.5;
+                    targetY = canvasHeight / 5 * 3;
+                    console.log("centre bas");
                 }
                 else
                 {
                     targetY = canvasHeight / 2 + paddleHeight / 2;
+                    console.log("centre");
                 }
             }
-            /*
+            
             if (t[2] == "droite") //point d'arriver
             {
+                console.log("droite");
                 if (t[3] == "monte")
                 {
-
+                    if (rightPaddleY < bx)
+                        targetY = rightPaddleY + PaddleSpeed;
+                    else if ((rightPaddleY - paddleHeight) > bx)
+                        targetY = rightPaddleY - PaddleSpeed;
+                    console.log("monte");
                 }
                 else
                 {
-    
+                    if ((rightPaddleY - paddleHeight) > bx)
+                        targetY = rightPaddleY - PaddleSpeed;
+                    else if (rightPaddleY < bx)
+                        targetY = rightPaddleY + PaddleSpeed;
+                    console.log("descend");
                 }
             }
-            */
+            
             if (rightPaddleY < targetY) {
-                return PaddleSpeed; // Bouger vers le bas
+                return PaddleSpeed; // Bouger vers le haut
             } else if (rightPaddleY >= targetY) {
-                return -PaddleSpeed; // Bouger vers le haut
+                return -PaddleSpeed; // Bouger vers le bas
             }
             return 0; // Ne pas bouger centre
         }
     }
 }
 
-function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight)
+function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight, t)
 {
-    const tableau = [0, 0, "null", "null"];
     let oldBY = 0.1;
 
+    console.log(BX);
     if (BX <= 0) // raquette gauche
     {
-        tableau[0] = 0;
-        tableau[1] = BY;
-        tableau[2] = "gauche";
+        t[0] = 0;
+        t[1] = BY;
+        t[2] = "gauche";
+        if (BY > oldBY)
+            t[3] = "monte";
+        else
+            t[3] = "descend"
+        console.log("Tableau après modification 0 :", t);
         return (tableau)
     }
     else if (BX >= canvasWidth) // raquette droite
     {
-        tableau[0] = BX;
-        tableau[1] = canvasWidth;
-        tableau[2] = "droite";
-        return (tableau)
+        t[0] = BX;
+        t[1] = canvasWidth;
+        t[2] = "droite";
+        if (BY > oldBY)
+            t[3] = "monte";
+        else
+            t[3] = "descend"
+        console.log("Tableau après modification 1 :", t);
+        return (t)
     }
     while (BX > 0 && BX < canvasWidth)
     {
@@ -114,17 +140,20 @@ function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_s
     
         if (BX <= 0 || BX >= canvasWidth)
         {
-            tableau[0] = BX;
-            tableau[1] = BY;
+            t[0] = BX;
+            t[1] = BY;
             if (BX <= 0)
-                tableau[2] = "gauche";
+                t[2] = "gauche";
             else if (BX >= canvasWidth)
-                tableau[2] = "droite";
+                t[2] = "droite";
             if (BY > oldBY)
-                tableau[3] = "monte";
+                t[3] = "monte";
             else
-                tableau[3] = "descend";
-            return (tableau)
+                t[3] = "descend";
+            console.log("Tableau après modification 2 :", t);
+            return (t)
         }
     }
+    console.log("Tableau après modification 3 :", t);
+    return (t)
 }
