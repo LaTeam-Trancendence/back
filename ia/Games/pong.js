@@ -108,6 +108,7 @@ export default function startPongGame(canvas, onPaddleMove) {
             }
             ball_more_speed_x = 0;
             ball_more_speed_y = 0;
+            console.log("reinitialise");
         }
     }
   
@@ -157,9 +158,9 @@ export default function startPongGame(canvas, onPaddleMove) {
         paddleHeight : 120,
         paddleOffset : 86,
         ballSize : 10,
-        rightPaddleY : (canvas.height - paddleHeight) / 2,
+        rightPaddleY : rightPaddlePos,
         PaddleSpeed : 6,
-
+        gnow : Date.now(),
         ballX : ballX,
         ballY : ballY,
         ballSpeedX : ballSpeedX,
@@ -170,6 +171,8 @@ export default function startPongGame(canvas, onPaddleMove) {
 
     function updateGameState()
     {
+        gameState.rightPaddleY = rightPaddlePos;
+        gameState.gnow = Date.now();
         gameState.ballX = ballX;
         gameState.ballY = ballY;
         gameState.ballSpeedX = ballSpeedX;
@@ -180,21 +183,22 @@ export default function startPongGame(canvas, onPaddleMove) {
 
     let isAIEnabled = true; // Active l'IA
     let ai = aiController();
-    let lastUpdateTime = Date.now;
+    let lastUpdateTime = Date.now();
     let sleep = 1000;
     function gameLoop() 
     {
-        let now = Date.now;
+        let now = Date.now();
         if (now - lastUpdateTime >= sleep)
         {
             updateGameState();
             lastUpdateTime = now;
         }
+        console.log("RP", rightPaddlePos);
         Draw();
         MoveBall();
         MovePaddles();
 //        console.log(ballX, ballY);
-//        console.log(gameState);
+        console.log(gameState);
         if (store.getters["GetBallSpeedTimeState"] == true) 
         {
             IncreaseBallSpeed();
@@ -205,7 +209,6 @@ export default function startPongGame(canvas, onPaddleMove) {
         }
     
         requestAnimationFrame(gameLoop);
-//        clearInterval(myInterval);
     }
   
     function controlPaddles() {
@@ -260,7 +263,7 @@ export default function startPongGame(canvas, onPaddleMove) {
             }
         });
     }
-
+    window.addEventListener('resize', ResizeWindow);
     // Démarrer le jeu
     if (isAIEnabled && ai) {
         const gameState = {          
@@ -270,9 +273,9 @@ export default function startPongGame(canvas, onPaddleMove) {
             paddleHeight : 120,
             paddleOffset : 86,
             ballSize : 10,
-            rightPaddleY : (canvas.height - paddleHeight) / 2,
+            rightPaddleY : rightPaddlePos,
             PaddleSpeed : 6,
-
+            gnow : Date.now(),
             ballX : ballX,
             ballY : ballY,
             ballSpeedX : ballSpeedX,
