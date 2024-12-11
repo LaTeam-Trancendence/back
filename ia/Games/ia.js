@@ -1,4 +1,3 @@
-
 const paddleWidth = 20;
 const paddleHeight = 120;
 const ballSize = 10;
@@ -20,11 +19,9 @@ export default function aiController(){
             let ball_more_speed_y = gameState.ball_more_speed_y;
             //t = tableau
             let t = [0, 0, "gauche", "monte"]
-            console.log("ia", gameState.ballSpeedX, gameState.ballSpeedY, gameState.ballX, gameState.ballY);
             if (ballSpeedX == 0 && gameState.ballY)
             {
                 i = 1;
-                console.log("ballspeedX")
                 return 0;
             }
             if (i == 1)
@@ -47,7 +44,6 @@ export default function aiController(){
                 }
             }
             t = previous(gameState.ballX, gameState.ballY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight, t);
-//            console.log(t);
             let h = canvasHeight / 3; //haut
             let c = canvasHeight / 3 * 2; //centre
             let t1 = canvasWidth / 3; // gauche
@@ -59,12 +55,6 @@ export default function aiController(){
             if (nt < 10)
             {
                 rightPaddleY = rightPaddlePos;
-                console.log("reinit");
-                console.log("reinit");
-                console.log("reinit");
-                console.log("reinit");
-                console.log("reinit");
-                console.log("reinit");
             }
             if (t[2] == "gauche")
             {
@@ -84,27 +74,22 @@ export default function aiController(){
 
             if (t[2] == "droite") //point d'arriver
             {
-                console.log("droite");
-                if ((rightPaddleY) < (t[1])  && (rightPaddleY + paddleHeight) > t[1])
+                if ((rightPaddleY) < (t[1] - paddleHeight / 3)  && (rightPaddleY + paddleHeight) > t[1])
                 {
-                    console.log("rightpaddleY", rightPaddleY, "t1", t[1], "0");
                     return 0;
                 }
-                else if ((rightPaddleY + paddleHeight / 10) >= t[1])
+                else if ((rightPaddleY + paddleHeight / 5) >= t[1])
                 {
-                    rightPaddleY -= PaddleSpeed;
-                    console.log("rightpaddleY", rightPaddleY, "t1", t[1], "-");
+                    rightPaddleY -= PaddleSpeed;;
                     return -PaddleSpeed;
                 }
                 else if ((rightPaddleY - paddleHeight / 2) < t[1] && (rightPaddleY + paddleHeight) <= t[1])
                 {
                     rightPaddleY += PaddleSpeed;
-                    console.log("rightpaddleY", rightPaddleY, "t1", t[1], "+");
                     return PaddleSpeed;
                 }gameState.ballX
                 return 0;
             }
-            console.log("rightPaddleY", rightPaddleY, "targetY", targetY, "PaddleSpeed", PaddleSpeed);
 
             if (rightPaddleY < targetY) 
             {
@@ -124,14 +109,12 @@ function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_s
 {
     let oldBY = 0.1;
 
-//    console.log(BX);
     if (BX <= 0) // raquette gauche
     {
         t[0] = 0;
         t[1] = BY;
         t[2] = "gauche";
         t[3] = "inconnue";
-        console.log("Tableau après modification 0 :", t);
         return (tableau)
     }
     else if (BX >= canvasWidth) // raquette droite
@@ -140,7 +123,6 @@ function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_s
         t[1] = BY;
         t[2] = "droite";
         t[3] = "iconnue";
-        console.log("Tableau après modification 1 :", t);
         return (t)
     }
     while (BX > 0 && BX < canvasWidth)
@@ -169,10 +151,8 @@ function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_s
                 t[3] = "monte";
             else
                 t[3] = "descend";
-            console.log("Tableau après modification 2 :", t);
             return (t)
         }
     }
-    console.log("Tableau après modification 3 :", t);
     return (t)
 }
