@@ -1,7 +1,6 @@
 
 const paddleWidth = 20;
 const paddleHeight = 120;
-const paddleOffset = 86;
 const ballSize = 10;
 let PaddleSpeed = 6;
 
@@ -12,7 +11,7 @@ let rightPaddleY = 0;
 export default function aiController(){
     return {
         updateAi(gameState) {
-            const canvasWidth = gameState.canvasWidth - paddleOffset;
+            const canvasWidth = gameState.canvasWidth;
             const canvasHeight = gameState.canvasHeight;
             let rightPaddlePos = gameState.rightPaddleY;
             let ballSpeedX = gameState.ballSpeedX;
@@ -21,6 +20,32 @@ export default function aiController(){
             let ball_more_speed_y = gameState.ball_more_speed_y;
             //t = tableau
             let t = [0, 0, "gauche", "monte"]
+            console.log("ia", gameState.ballSpeedX, gameState.ballSpeedY, gameState.ballX, gameState.ballY);
+            if (ballSpeedX == 0 && gameState.ballY)
+            {
+                i = 1;
+                console.log("ballspeedX")
+                return 0;
+            }
+            if (i == 1)
+            {
+                let targetY = canvasHeight / 2;
+                if ((rightPaddleY > (targetY - paddleHeight / 2)))
+                {
+                    rightPaddleY -= PaddleSpeed;
+                    return -PaddleSpeed;
+                }
+                else if ((rightPaddleY + paddleHeight) < targetY)
+                {
+                    rightPaddleY += PaddleSpeed;
+                    return PaddleSpeed;
+                }
+                else
+                {
+                    i = 0;
+                    return 0;
+                }
+            }
             t = previous(gameState.ballX, gameState.ballY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight, t);
 //            console.log(t);
             let h = canvasHeight / 3; //haut
@@ -44,46 +69,28 @@ export default function aiController(){
             if (t[2] == "gauche")
             {
                 if (((by < h && bx >= t2) || (by >= h && by < c && bx < t1) || (by < h && bx < t1)) && t[3] == "descend") // hib 1/3 et cib 3/3 et hib 3/3
-                {
                     targetY = h * 0.90; // haut
-//                    console.log("haut", targetY, rightPaddleY);
-                }
                 else if ((by >= h && by < c && bx >= t2 && t[3] == "monte") || (by > c && bx >= t2 && t[3] == "descend") || (by > c && bx < t1 && t[3] == "descend")) //cih 1/3 et bib 3/3 1/3
-                {
                     targetY = h * 0.90; // haut
-//                    console.log("haut", targetY, rightPaddleY);
-                }
                 else if (((by > c && bx < t1) || (by > c && bx >= t2) || (by < h && bx < t1) || (by < h && bx >= t2)) && t[3] == "monte") // bih 1/3 bih 3/3 hih 1/3 hih 3/3
-                {
                     targetY = c; // bas
-//                    console.log("bas", targetY, rightPaddleY);
-                }
                 else if (((by < h && bx >= t1 && bx < t2) || (by >= h && by < c && bx >= t1 && bx < t2) || (by > c && bx >= t1 && bx < t2)) && t[3] == "descend") // hib 2/3 cib 2/3 bib 2/3
-                {
                     targetY = canvasHeight / 5 * 2; //c haut
-//                    console.log("centre haut", targetY, rightPaddleY);
-                }
                 else if (((by >= c && bx >= t1 && bx < t2) || (by < h && bx >= t1 && bx < t2) || (by >= h && by < c && bx >= t1 && bx < t2)) && t[3] == "monte") // bih 2/3 hih 2/3 cb 2/3
-                {
-                    targetY = canvasHeight / 5 * 3;
-//                    console.log("centre bas", targetY, rightPaddleY);
-                }
+                    targetY = canvasHeight / 5 * 3; //centre bas
                 else
-                {
-                    targetY = canvasHeight / 2 + paddleHeight / 2;
-//                    console.log("centre", targetY, rightPaddleY);
-                }
+                    targetY = canvasHeight / 2 + paddleHeight / 2; //centre
             }
 
             if (t[2] == "droite") //point d'arriver
             {
                 console.log("droite");
-                if ((rightPaddleY) < t[1] && (rightPaddleY + paddleHeight) > t[1])
+                if ((rightPaddleY) < (t[1])  && (rightPaddleY + paddleHeight) > t[1])
                 {
                     console.log("rightpaddleY", rightPaddleY, "t1", t[1], "0");
                     return 0;
                 }
-                else if ((rightPaddleY - paddleHeight / 2) >= t[1])
+                else if ((rightPaddleY + paddleHeight / 10) >= t[1])
                 {
                     rightPaddleY -= PaddleSpeed;
                     console.log("rightpaddleY", rightPaddleY, "t1", t[1], "-");
@@ -94,24 +101,8 @@ export default function aiController(){
                     rightPaddleY += PaddleSpeed;
                     console.log("rightpaddleY", rightPaddleY, "t1", t[1], "+");
                     return PaddleSpeed;
-                }
+                }gameState.ballX
                 return 0;
-                /*if (t[3] == "monte")
-                {
-                    if (rightPaddleY < (t[1] + paddleHeight / 2))
-                        targetY = rightPaddleY + PaddleSpeed;
-                    else if ((rightPaddleY - paddleHeight) >= t[1])
-                        targetY = rightPaddleY - PaddleSpeed;
-                    console.log("monte");
-                }
-                else
-                {
-                    if ((rightPaddleY - paddleHeight) > t[1])
-                        targetY = rightPaddleY - PaddleSpeed;
-                    else if (rightPaddleY < t[1])
-                        targetY = rightPaddleY + PaddleSpeed;
-                    console.log("descend");
-                }*/
             }
             console.log("rightPaddleY", rightPaddleY, "targetY", targetY, "PaddleSpeed", PaddleSpeed);
 
@@ -146,7 +137,7 @@ function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_s
     else if (BX >= canvasWidth) // raquette droite
     {
         t[0] = BX;
-        t[1] = canvasWidth;
+        t[1] = BY;
         t[2] = "droite";
         t[3] = "iconnue";
         console.log("Tableau après modification 1 :", t);

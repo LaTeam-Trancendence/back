@@ -1,5 +1,5 @@
 <template>
-	<div class="absolute px-6 py-2 top-0 right-0 bg-gradient-to-br from-gray-500 to-gray-300 hover:bg-gradient-to-bl rounded-bl-lg shadow-lg">
+	<div class="absolute px-6 py-2 top-0 left-1/2 -translate-x-1/2 bg-gradient-to-br from-gray-500 to-gray-300 hover:bg-gradient-to-bl rounded-b-lg shadow-lg">
 		<label class="flex cursor-pointer">
 			<span class="-ml-1">AZ</span>
 			<input type="checkbox" v-model="state_layout" class="sr-only peer">
@@ -9,14 +9,14 @@
 		<h2 class="flex justify-center items-center my-1 mb-2"><i class="fa-solid fa-arrow-down mr-2"></i>{{$t("Player1")}}<i class="fa-solid fa-arrow-down ml-2"></i></h2>
 		<img v-if="GetLayoutState" class="absolute left-2 w-6 h-6" src="../../assets/img/key_w.png" alt="Touche haut joueur 1"/>
 		<img v-if="!GetLayoutState" class="absolute left-2 w-6 h-6" src="../../assets/img/key_z.png" alt="Touche haut joueur 1"/>
-		<h2 class="my-1 ml-4">Test touche</h2>
+		<h2 class="my-1 ml-4">{{$t("Up")}}</h2>
 		<img class="absolute left-2 w-6 h-6" src="../../assets/img/key_s.png" alt="Touche bas joueur 1"/>
-		<h2 class="my-1 ml-4">Test touche</h2>
+		<h2 class="my-1 ml-4">{{$t("Down")}}</h2>
 		<h2 class="flex justify-center items-center my-1 mb-2"><i class="fa-solid fa-arrow-down mr-2"></i>{{$t("Player2")}}<i class="fa-solid fa-arrow-down ml-2"></i></h2>
 		<img class="absolute left-2 w-6 h-6" src="../../assets/img/key_up.png" alt="Touche haut joueur 1"/>
-		<h2 class="my-1 ml-4">Test touche</h2>
+		<h2 class="my-1 ml-4">{{$t("Up")}}</h2>
 		<img class="absolute left-2 w-6 h-6" src="../../assets/img/key_down.png" alt="Touche bas joueur 1"/>
-		<h2 class="my-1 ml-4">Test touche</h2>
+		<h2 class="my-1 ml-4">{{$t("Down")}}</h2>
 	</div>
 </template>
 
