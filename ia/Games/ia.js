@@ -19,29 +19,24 @@ export default function aiController(){
             let ball_more_speed_y = gameState.ball_more_speed_y;
             //t = tableau
             let t = [0, 0, "gauche", "monte"]
-            if (ballSpeedX == 0 && gameState.ballY)
+            if (ballSpeedX == 0 && ballSpeedY == 0)
             {
                 i = 1;
-                return 0;
-            }
-            if (i == 1)
-            {
-                let targetY = canvasHeight / 2;
-                if ((rightPaddleY > (targetY - paddleHeight / 2)))
+                let c = canvasHeight / 2;
+                console.log("reinitialisaion", c);
+                console.log("rightpaddleY", rightPaddleY);
+                if ((rightPaddleY + paddleHeight / 5) > c)
                 {
                     rightPaddleY -= PaddleSpeed;
                     return -PaddleSpeed;
                 }
-                else if ((rightPaddleY + paddleHeight) < targetY)
+                else if ((rightPaddleY + paddleHeight - paddleHeight / 5) <= c)
                 {
                     rightPaddleY += PaddleSpeed;
                     return PaddleSpeed;
                 }
                 else
-                {
-                    i = 0;
                     return 0;
-                }
             }
             t = previous(gameState.ballX, gameState.ballY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight, t);
             let h = canvasHeight / 3; //haut
@@ -54,8 +49,11 @@ export default function aiController(){
             let nt = Date.now() - gameState.gnow;
             if (nt < 10)
             {
+                i = 0;
                 rightPaddleY = rightPaddlePos;
             }
+            if (i == 1)
+                t[1] = canvasHeight / 2 - paddleHeight / 5;
             if (t[2] == "gauche")
             {
                 if (((by < h && bx >= t2) || (by >= h && by < c && bx < t1) || (by < h && bx < t1)) && t[3] == "descend") // hib 1/3 et cib 3/3 et hib 3/3
@@ -74,31 +72,32 @@ export default function aiController(){
 
             if (t[2] == "droite") //point d'arriver
             {
-                if ((rightPaddleY) < (t[1] - paddleHeight / 3)  && (rightPaddleY + paddleHeight) > t[1])
+                console.log("droite");
+                if (((rightPaddleY) < (t[1] - paddleHeight / 2))  && ((rightPaddleY + paddleHeight - paddleHeight / 3) > t[1]))
                 {
                     return 0;
                 }
-                else if ((rightPaddleY + paddleHeight / 5) >= t[1])
+                else if ((rightPaddleY + paddleHeight / 2) >= t[1])
                 {
-                    rightPaddleY -= PaddleSpeed;;
+                    rightPaddleY -= PaddleSpeed;
                     return -PaddleSpeed;
                 }
-                else if ((rightPaddleY - paddleHeight / 2) < t[1] && (rightPaddleY + paddleHeight) <= t[1])
+                else if ((rightPaddleY < t[1]) && ((rightPaddleY + paddleHeight - paddleHeight / 3) <= t[1]))
                 {
                     rightPaddleY += PaddleSpeed;
                     return PaddleSpeed;
-                }gameState.ballX
+                }
                 return 0;
             }
 
             if (rightPaddleY < targetY) 
             {
                 rightPaddleY += PaddleSpeed;
-                return PaddleSpeed; // Bouger vers le haut
+                return PaddleSpeed;
             } else if ((rightPaddleY - paddleHeight) >= targetY)
             {
                 rightPaddleY -= PaddleSpeed;
-                return -PaddleSpeed; // Bouger vers le bas
+                return -PaddleSpeed;
             }
             return 0; // Ne pas bouger centre
         }
