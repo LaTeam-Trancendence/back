@@ -6,11 +6,14 @@
     <div class="fixed inset-0 flex flex-col items-center justify-center">
         <LoopVideo/>
         <div class="relative w-4/5 md:w-3/5 bg-gray-900 border border-gray-600 hover:border-red-600 hover:outline outline-2 outline-red-600 rounded-lg">
-            <!-- <img class="rounded-t-lg relative z-20" src="../../assets/img/lantern_empty.png" alt="Lanterne qui contient TicTacToe"/>
-            <img class="absolute -top-24 left-0 w-full h-full object-contain scale-40 z-10" src="../../assets/img/morpion_trans.png" alt="Image du Pong"/> -->
             <div class="p-5 relative z-20">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-white">{{$t('Preferences_Games')}}</h5>
-                <!-- <p class="mb-2 font-normal text-gray-400">{{$t('Descri_TicTacToe')}}</p> -->
+                <!-- Ia-->
+                <label class="mb-3 md:inline-flex items-center cursor-pointer">
+                    <span class="text-white">{{$t("Play_With_Ia")}} </span>
+                    <input type="checkbox" v-model="play_ia" class="sr-only peer">
+                    <div class="relative w-11 h-6 mb-8 md:mb-0 mt-1 md:mt-0 md:-right-3 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                </label>
                 <!-- color 1 -->
                 <h2 class="text-white absolute my-2">{{$t("Color1")}}</h2>
                 <div v-if="$i18n.locale === 'fr'">
@@ -144,6 +147,7 @@
         name: "CustomPong",
         data() {
             return {
+                play_ia: false,
                 color1: '#ff0000',
                 color2: '#ffd200',
                 state_ball_time: false,
@@ -152,6 +156,7 @@
             };
         },
 		computed: {
+            ...mapGetters(['GetPlayIaState']),
 			...mapGetters(['GetColor1State']),
 			...mapGetters(['GetColor2State']),
 			...mapGetters(['GetBallSpeedTimeState']),
@@ -159,6 +164,7 @@
 			...mapGetters(['GetRemoveHitState']),
 		},
         methods: {
+            ...mapMutations(['SetPlayIaState']),
             ...mapMutations(['SetColor1State']),
             ...mapMutations(['SetColor2State']),
             ...mapMutations(['SetBallSpeedTimeState']),
@@ -166,6 +172,7 @@
             ...mapMutations(['SetRemoveHitState']),
 
             change_preferences() {
+                this.SetPlayIaState(this.play_ia);
                 this.SetColor1State(this.color1);
                 this.SetColor2State(this.color2);
                 this.SetBallSpeedTimeState(this.state_ball_time);
@@ -178,6 +185,7 @@
 			},
         },
         mounted() {
+            this.play_ia = this.GetPlayIaState;
 			this.color1 = this.GetColor1State;
 			this.color2 = this.GetColor2State;
 			this.state_ball_time = this.GetBallSpeedTimeState;

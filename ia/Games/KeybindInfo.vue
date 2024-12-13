@@ -1,5 +1,5 @@
 <template>
-	<div class="absolute px-6 py-2 top-0 left-1/2 -translate-x-1/2 bg-gradient-to-br from-gray-500 to-gray-300 hover:bg-gradient-to-bl rounded-b-lg shadow-lg">
+	<div class="z-50 absolute px-6 py-2 top-0 left-1/2 -translate-x-1/2 bg-gradient-to-br from-gray-500 to-gray-300 hover:bg-gradient-to-bl rounded-b-lg shadow-lg">
 		<label class="flex cursor-pointer">
 			<span class="-ml-1">AZ</span>
 			<input type="checkbox" v-model="state_layout" class="sr-only peer">

@@ -2,15 +2,16 @@
 	import LoopVideo from '../LoopVideo.vue'
 
 	import {useI18n} from 'vue-i18n';
+	import {useStore} from 'vuex';
 	import {ref, computed} from 'vue';
+	import apiClient from '@/axios';
 
 	const {t} = useI18n()
-	// Grille vide (3x3)
+	const store = useStore();
 	const board = ref(Array(9).fill(null));
-	// Joueur actuel
 	const currentPlayer = ref('X');
-	// Gagnant
 	const winner = ref(null);
+
 	// Message de statut
 	const statusMessage = computed(() => {
 		if (winner.value) {
@@ -43,18 +44,36 @@
 	const checkWinner = () => {
 		for (const [a, b, c] of winningCombinations) {
 			if (board.value[a] && board.value[a] === board.value[b] && board.value[a] === board.value[c]) {
-			winner.value = board.value[a];
-			return true;
+				winner.value = board.value[a];
+				return true;
 			}
 		}
 		return false;
 	};
 
 	// Fonction pour effectuer un mouvement
-	const makeMove = (index) => {
+	const makeMove = async (index) => {
 		if (board.value[index] || winner.value) return; // Empêche de jouer sur une case occupée ou après la fin
+		if (store.getters["GetRemoveHitState"]) {
+			if (Math.random() < 1 / 9) {
+				console.log('Coup annulé, chance sur 9 activée.');
+				currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'; // Change de joueur
+				return;
+			}
+		}
 		board.value[index] = currentPlayer.value;
-		if (!checkWinner()) {
+		if (checkWinner()) {
+			// Gérer l'appel API après avoir trouvé un gagnant
+			try {
+				await post_tictactoe(currentPlayer.value);
+			} catch (error) {
+				console.error('Erreur lors de l\'envoi du résultat :', error);
+			}
+		} else if (board.value.every(cell => cell)) {
+			// Égalité
+			console.log('Match nul');
+		} else {
+			// Changer de joueur
 			currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X'; // Change de joueur
 		}
 	};
@@ -69,6 +88,22 @@
 	const isGameOver = computed(() => {
 		return winner.value != null || (board.value && board.value.every(cell => cell != null));
 	});
+
+	const post_tictactoe = async (winner) => {
+		try {
+			const userState = store.getters.GetUserState;
+			let state;
+			if (winner == "X") {
+				state = "win_tictactoe";
+			}
+			else {
+				state = "lose_tictactoe";
+			}
+			const response = await apiClient.post('player/', {user: userState, stat_type: state});
+		} catch (error) {;
+			console.error('Erreur lors de l\'envoi des données :', error.response ? error.response.data : error.message);
+		}
+	};
 </script>
 
 <template>
@@ -123,6 +158,7 @@
 			...mapGetters(['GetColor1State']),
 			...mapGetters(['GetColor2State']),
 			...mapGetters(['GetRemoveHitState']),
+			...mapGetters(['GetUserState']),
 		},
 	};
 </script>

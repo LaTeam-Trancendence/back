@@ -1,9 +1,5 @@
-const paddleWidth = 20;
-const paddleHeight = 120;
-const ballSize = 10;
-let PaddleSpeed = 6;
-
 let i = 0;
+const ballSize = 10;
 
 let rightPaddleY = 0;
 
@@ -12,6 +8,9 @@ export default function aiController(){
         updateAi(gameState) {
             const canvasWidth = gameState.canvasWidth;
             const canvasHeight = gameState.canvasHeight;
+            const paddleWidth = gameState.paddleWidth;
+            const paddleHeight = gameState.paddleHeight;
+            let PaddleSpeed = gameState.PaddleSpeed;
             let rightPaddlePos = gameState.rightPaddleY;
             let ballSpeedX = gameState.ballSpeedX;
             let ballSpeedY = gameState.ballSpeedY;
@@ -23,21 +22,37 @@ export default function aiController(){
             {
                 i = 1;
                 let c = canvasHeight / 2;
-                console.log("reinitialisaion", c);
+/*                console.log("reinitialisaion", c);
                 console.log("rightpaddleY", rightPaddleY);
-                if ((rightPaddleY + paddleHeight / 5) > c)
+                if ((rightPaddleY + paddleHeight / 3) > c)
                 {
                     rightPaddleY -= PaddleSpeed;
                     return -PaddleSpeed;
                 }
-                else if ((rightPaddleY + paddleHeight - paddleHeight / 5) <= c)
+                else if ((rightPaddleY + paddleHeight - paddleHeight / 3) <= c)
                 {
                     rightPaddleY += PaddleSpeed;
                     return PaddleSpeed;
                 }
                 else
+                    return 0;*/
+                if (((rightPaddleY) < (c - paddleHeight / 2))  && ((rightPaddleY + paddleHeight - paddleHeight / 3) > c))
+                {
                     return 0;
+                }
+                else if ((rightPaddleY + paddleHeight / 2) >= c)
+                {
+                    rightPaddleY -= PaddleSpeed;
+                    return -PaddleSpeed;
+                }
+                else if ((rightPaddleY < c) && ((rightPaddleY + paddleHeight - paddleHeight / 3) <= c))
+                {
+                    rightPaddleY += PaddleSpeed;
+                    return PaddleSpeed;
+                }
+                return 0;
             }
+
             t = previous(gameState.ballX, gameState.ballY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight, t);
             let h = canvasHeight / 3; //haut
             let c = canvasHeight / 3 * 2; //centre
@@ -69,10 +84,9 @@ export default function aiController(){
                 else
                     targetY = canvasHeight / 2 + paddleHeight / 2; //centre
             }
-
             if (t[2] == "droite") //point d'arriver
             {
-                console.log("droite");
+//                console.log("droite");
                 if (((rightPaddleY) < (t[1] - paddleHeight / 2))  && ((rightPaddleY + paddleHeight - paddleHeight / 3) > t[1]))
                 {
                     return 0;
@@ -114,7 +128,7 @@ function previous(BX, BY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_s
         t[1] = BY;
         t[2] = "gauche";
         t[3] = "inconnue";
-        return (tableau)
+        return (t)
     }
     else if (BX >= canvasWidth) // raquette droite
     {
