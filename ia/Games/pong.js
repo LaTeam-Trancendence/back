@@ -116,80 +116,44 @@ export default function startPongGame(canvas, onPaddleMove, GetScore) {
         }
         // Si la balle sort du canvas (score ou reset)
         if (ballX <= 0 || ballX >= canvas.width) {
-            if (isResetting == false) 
-            {
-                ballSpeedX = 0;
-                resetBall()
-            }
+            resetBall();
         }
     }
+
     let isSpeedIncreaseActive = true;
     function resetBall() {
-        isResetting = true;
         // Score et envoie score
-        console.log("resetball");
         if (ballX >= canvas.width) {
-            console.log("width", canvas.width);
-            if (attente != 1)
-            {
-                console.log("plus player 1");
-                player1 = player1 + 1;
-            }
+            player1 = player1 + 1;
         }
-        // console.log(ballX)
         if (ballX <= 0) {
-            console.log("zero x", ballX);
-            if (attente != 1)
-            {
-                console.log("plus player 2");
-                player2 = player2 + 1;
-            }
+            player2 = player2 + 1;
         }
-        console.log("player", player1, player2);
-        // Balle au centre et vitesse a 0
-        if (attente = 1)
-        {
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2;
-            ballSpeedX = 0 * store.getters["GetBallSpeedManualState"];
-            ballSpeedY = 0 * store.getters["GetBallSpeedManualState"];
-        }
-
         if (typeof GetScore === 'function') {
-            if (attente < 1)
-            {
-                console.log("getScore");
-                GetScore({player1, player2});
-            }
-            attente = 1;
+            GetScore({player1, player2});
         }
 
         // Balle au centre et vitesse a 0
-        if (attente != 2)
-        {
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2;
-            ballSpeedX = 0 * store.getters["GetBallSpeedManualState"];
-            ballSpeedY = 0 * store.getters["GetBallSpeedManualState"];
+        ballX = canvas.width / 2;
+        ballY = canvas.height / 2;
+        ballSpeedX = 0 * store.getters["GetBallSpeedManualState"];
+        ballSpeedY = 0 * store.getters["GetBallSpeedManualState"];
     
         // Réinitialisation des vitesses supplémentaires
-            ball_more_speed_x = 0;
-            ball_more_speed_y = 0;
-            isSpeedIncreaseActive = false;
+        ball_more_speed_x = 0;
+        ball_more_speed_y = 0;
+        isSpeedIncreaseActive = false;
     
         // Appliquer une direction aléatoire pour `ballSpeedX`
-            if (Math.random() >= 0.5) {
-                ballSpeedX = -ballSpeedX;
-            }
-            attente == 2
-            // Attendre 4 seconde pour que la balle rebouge
-            setTimeout(() => {
-                ballSpeedX = 8 * store.getters["GetBallSpeedManualState"];
-                isSpeedIncreaseActive = true;
-                isResetting = false;
-                attente = 0;
-            }, "4000");
+        if (Math.random() >= 0.5) {
+            ballSpeedX = -ballSpeedX;
         }
+
+        // Attendre 4 seconde pour que la balle rebouge
+        setTimeout(() => {
+            ballSpeedX = 8 * store.getters["GetBallSpeedManualState"];
+            isSpeedIncreaseActive = true;
+        }, "4000");
     }
   
     // Mouvement des raquettes

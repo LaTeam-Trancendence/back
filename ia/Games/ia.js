@@ -1,27 +1,27 @@
 let i = 0;
 const ballSize = 10;
 
-let rightPaddleY = 0;
+let iarightPaddleY = 0;
 
 export default function aiController(){
     return {
         updateAi(gameState) {
-            const canvasWidth = gameState.canvasWidth;
-            const canvasHeight = gameState.canvasHeight;
-            const paddleWidth = gameState.paddleWidth;
-            const paddleHeight = gameState.paddleHeight;
-            let PaddleSpeed = gameState.PaddleSpeed;
-            let rightPaddlePos = gameState.rightPaddleY;
-            let ballSpeedX = gameState.ballSpeedX;
-            let ballSpeedY = gameState.ballSpeedY;
-            let ball_more_speed_x = gameState.ball_more_speed_x;
-            let ball_more_speed_y = gameState.ball_more_speed_y;
+            const iacanvasWidth = gameState.canvasWidth;
+            const iacanvasHeight = gameState.canvasHeight;
+            const iapaddleWidth = gameState.paddleWidth;
+            const iapaddleHeight = gameState.paddleHeight;
+            let iaPaddleSpeed = gameState.PaddleSpeed;
+            let iarightPaddlePos = gameState.rightPaddleY;
+            let iaballSpeedX = gameState.ballSpeedX;
+            let iaballSpeedY = gameState.ballSpeedY;
+            let iaball_more_speed_x = gameState.ball_more_speed_x;
+            let iaball_more_speed_y = gameState.ball_more_speed_y;
             //t = tableau
             let t = [0, 0, "gauche", "monte"]
-            if (ballSpeedX == 0 && ballSpeedY == 0)
+            if (iaballSpeedX == 0 && iaballSpeedY == 0)
             {
                 i = 1;
-                let c = canvasHeight / 2;
+                let c = iacanvasHeight / 2;
 /*                console.log("reinitialisaion", c);
                 console.log("rightpaddleY", rightPaddleY);
                 if ((rightPaddleY + paddleHeight / 3) > c)
@@ -36,39 +36,39 @@ export default function aiController(){
                 }
                 else
                     return 0;*/
-                if (((rightPaddleY) < (c - paddleHeight / 2))  && ((rightPaddleY + paddleHeight - paddleHeight / 3) > c))
+                if (((iarightPaddleY) < (c - iapaddleHeight / 2))  && ((iarightPaddleY + iapaddleHeight - iapaddleHeight / 3) > c))
                 {
                     return 0;
                 }
-                else if ((rightPaddleY + paddleHeight / 2) >= c)
+                else if ((iarightPaddleY + iapaddleHeight / 2) >= c)
                 {
-                    rightPaddleY -= PaddleSpeed;
-                    return -PaddleSpeed;
+                    iarightPaddleY -= iaPaddleSpeed;
+                    return -iaPaddleSpeed;
                 }
-                else if ((rightPaddleY < c) && ((rightPaddleY + paddleHeight - paddleHeight / 3) <= c))
+                else if ((iarightPaddleY < c) && ((iarightPaddleY + iapaddleHeight - iapaddleHeight / 3) <= c))
                 {
-                    rightPaddleY += PaddleSpeed;
-                    return PaddleSpeed;
+                    iarightPaddleY += iaPaddleSpeed;
+                    return iaPaddleSpeed;
                 }
                 return 0;
             }
 
-            t = previous(gameState.ballX, gameState.ballY, ballSpeedX, ballSpeedY, ball_more_speed_x, ball_more_speed_y, canvasWidth, canvasHeight, t);
-            let h = canvasHeight / 3; //haut
-            let c = canvasHeight / 3 * 2; //centre
-            let t1 = canvasWidth / 3; // gauche
-            let t2 = canvasWidth / 3 * 2; // centre
+            t = previous(gameState.ballX, gameState.ballY, iaballSpeedX, iaballSpeedY, iaball_more_speed_x, iaball_more_speed_y, iacanvasWidth, iacanvasHeight, t);
+            let h = iacanvasHeight / 3; //haut
+            let c = iacanvasHeight / 3 * 2; //centre
+            let t1 = iacanvasWidth / 3; // gauche
+            let t2 = iacanvasWidth / 3 * 2; // centre
             let bx = gameState.ballX;
             let by = gameState.ballY;
-            let targetY = canvasHeight / 2 + paddleHeight / 2;
+            let targetY = iacanvasHeight / 2 + iapaddleHeight / 2;
             let nt = Date.now() - gameState.gnow;
             if (nt < 10)
             {
                 i = 0;
-                rightPaddleY = rightPaddlePos;
+                iarightPaddleY = iarightPaddlePos;
             }
             if (i == 1)
-                t[1] = canvasHeight / 2 - paddleHeight / 5;
+                t[1] = iacanvasHeight / 2 - iapaddleHeight / 5;
             if (t[2] == "gauche")
             {
                 if (((by < h && bx >= t2) || (by >= h && by < c && bx < t1) || (by < h && bx < t1)) && t[3] == "descend") // hib 1/3 et cib 3/3 et hib 3/3
@@ -78,40 +78,40 @@ export default function aiController(){
                 else if (((by > c && bx < t1) || (by > c && bx >= t2) || (by < h && bx < t1) || (by < h && bx >= t2)) && t[3] == "monte") // bih 1/3 bih 3/3 hih 1/3 hih 3/3
                     targetY = c; // bas
                 else if (((by < h && bx >= t1 && bx < t2) || (by >= h && by < c && bx >= t1 && bx < t2) || (by > c && bx >= t1 && bx < t2)) && t[3] == "descend") // hib 2/3 cib 2/3 bib 2/3
-                    targetY = canvasHeight / 5 * 2; //c haut
+                    targetY = iacanvasHeight / 5 * 2; //c haut
                 else if (((by >= c && bx >= t1 && bx < t2) || (by < h && bx >= t1 && bx < t2) || (by >= h && by < c && bx >= t1 && bx < t2)) && t[3] == "monte") // bih 2/3 hih 2/3 cb 2/3
-                    targetY = canvasHeight / 5 * 3; //centre bas
+                    targetY = iacanvasHeight / 5 * 3; //centre bas
                 else
-                    targetY = canvasHeight / 2 + paddleHeight / 2; //centre
+                    targetY = iacanvasHeight / 2 + iapaddleHeight / 2; //centre
             }
             if (t[2] == "droite") //point d'arriver
             {
 //                console.log("droite");
-                if (((rightPaddleY) < (t[1] - paddleHeight / 2))  && ((rightPaddleY + paddleHeight - paddleHeight / 3) > t[1]))
+                if (((iarightPaddleY) < (t[1] - iapaddleHeight / 2))  && ((iarightPaddleY + iapaddleHeight - iapaddleHeight / 3) > t[1]))
                 {
                     return 0;
                 }
-                else if ((rightPaddleY + paddleHeight / 2) >= t[1])
+                else if ((iarightPaddleY + iapaddleHeight / 2) >= t[1])
                 {
-                    rightPaddleY -= PaddleSpeed;
-                    return -PaddleSpeed;
+                    iarightPaddleY -= iaPaddleSpeed;
+                    return -iaPaddleSpeed;
                 }
-                else if ((rightPaddleY < t[1]) && ((rightPaddleY + paddleHeight - paddleHeight / 3) <= t[1]))
+                else if ((iarightPaddleY < t[1]) && ((iarightPaddleY + iapaddleHeight - iapaddleHeight / 3) <= t[1]))
                 {
-                    rightPaddleY += PaddleSpeed;
-                    return PaddleSpeed;
+                    iarightPaddleY += iaPaddleSpeed;
+                    return iaPaddleSpeed;
                 }
                 return 0;
             }
 
-            if (rightPaddleY < targetY) 
+            if (iarightPaddleY < targetY) 
             {
-                rightPaddleY += PaddleSpeed;
-                return PaddleSpeed;
-            } else if ((rightPaddleY - paddleHeight) >= targetY)
+                iarightPaddleY += iaPaddleSpeed;
+                return iaPaddleSpeed;
+            } else if ((iarightPaddleY - iapaddleHeight) >= targetY)
             {
-                rightPaddleY -= PaddleSpeed;
-                return -PaddleSpeed;
+                iarightPaddleY -= iaPaddleSpeed;
+                return -iaPaddleSpeed;
             }
             return 0; // Ne pas bouger centre
         }
